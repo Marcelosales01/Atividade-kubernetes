@@ -34,9 +34,11 @@ atividade_kubernetes/
 
 ### Passos
 
-1. **Build da imagem Docker** (se necessário):
+1. **Build da imagem Docker e publicação no Docker Hub**:
    ```bash
    docker build -t seuusuario/nginx-ola-mundo:1.0 app/
+   docker login
+   docker push seuusuario/nginx-ola-mundo:1.0
    ```
 
 2. **Deploy no Kubernetes**:
