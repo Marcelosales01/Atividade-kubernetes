@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-ola-mundo
+  name: nginx-ola-mundo-v2
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: nginx-ola-mundo
+      app: nginx-ola-mundo-v2
   template:
     metadata:
       labels:
-        app: nginx-ola-mundo
+        app: nginx-ola-mundo-v2
     spec:
       containers:
-      - name: nginx-ola-mundo
-        image: marcelosales/nginx-ola-mundo:1.0
+      - name: nginx-ola-mundo-v2
+        image: marcelosales/nginx-ola-mundo:2.0
         ports:
         - containerPort: 80
