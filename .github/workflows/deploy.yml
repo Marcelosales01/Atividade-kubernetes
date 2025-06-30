@@ -1,4 +1,5 @@
-name: Build e Push Docker Image
+name: Build, Tag, Push Docker Image e update Deployment
+# Descrição: Este workflow é acionado quando há um push na branch v2. Ele constrói uma imagem Docker, faz o push para o DockerHub e atualiza o arquivo deployment.yaml com a nova tag da imagem.
 
 on:
   push:
@@ -13,12 +14,28 @@ jobs:
     - name: Checkout código
       uses: actions/checkout@v3
 
+    - name: Definir TAG da imagem (timestamp)
+      id: vars
+      run: echo "IMAGE_TAG=v2-$(date +%Y%m%d-%H%M)" >> $GITHUB_ENV
+
     - name: Login no DockerHub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     - name: Build da Docker Image
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/nginx-ola-mundo:2.0 ./app
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/nginx-ola-mundo:${{ env.IMAGE_TAG }} ./app
 
     - name: Push da Docker Image
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/nginx-ola-mundo:2.0
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/nginx-ola-mundo:${{ env.IMAGE_TAG }}
+
+    - name: Substituir imagem no deployment.yaml
+      run: |
+        sed -i "s|image: .*/nginx-ola-mundo:.*|image: ${{ secrets.DOCKER_USERNAME }}/nginx-ola-mundo:${{ env.IMAGE_TAG }}|" k8s/deployment.yaml
+
+    - name: Commit e push da mudança no YAML
+      run: |
+        git config --global user.name "${{ secrets.GIT_USERNAME }}"
+        git config --global user.email "${{ secrets.GIT_EMAIL }}"
+        git add k8s/deployment.yaml
+        git commit -m "Atualiza imagem para ${{ env.IMAGE_TAG }}"
+        git push origin v2
 
