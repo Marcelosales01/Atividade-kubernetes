@@ -32,10 +32,13 @@ jobs:
         sed -i "s|image: .*/nginx-ola-mundo:.*|image: ${{ secrets.DOCKER_USERNAME }}/nginx-ola-mundo:${{ env.IMAGE_TAG }}|" k8s/deployment.yaml
 
     - name: Commit e push da mudança no YAML
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         git config --global user.name "${{ secrets.GIT_USERNAME }}"
         git config --global user.email "${{ secrets.GIT_EMAIL }}"
         git add k8s/deployment.yaml
-        git commit -m "Atualiza imagem para ${{ env.IMAGE_TAG }}"
+        git commit -m "Atualiza imagem para ${{ env.IMAGE_TAG }} || echo "Nada para commit"
+        git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
         git push origin v2
 
