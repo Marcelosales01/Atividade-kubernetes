@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: nginx-ola-mundo-v2
-        image: marcelosales/nginx-ola-mundo:2.0
+        image: marcelosales/nginx-ola-mundo:v2-20250630-1430
         imagePullPolicy: Always
         ports:
         - containerPort: 80
