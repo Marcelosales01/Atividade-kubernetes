@@ -38,7 +38,7 @@ jobs:
         git config --global user.name "${{ secrets.GIT_USERNAME }}"
         git config --global user.email "${{ secrets.GIT_EMAIL }}"
         git add k8s/deployment.yaml
-        git commit -m "Atualiza imagem para ${{ env.IMAGE_TAG }} || echo "Nada para commit"
+        git commit -m "Atualiza imagem para ${{ env.IMAGE_TAG }}" || echo "Nada para commit"
         git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
         git push origin v2
 
