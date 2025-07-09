@@ -1,23 +1,23 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: trivy-scan-config
-data:
-  scan.sh: |
-    #!/bin/bash
-    trivy image --format json --output /tmp/trivy-report.json marcelosales/nginx-ola-mundo:2.0
-    trivy image marcelosales/nginx-ola-mundo:2.0
----
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: trivy-scan
-spec:
-  template:
-    spec:
-      containers:
-      - name: trivy
-        image: aquasec/trivy:latest
-        command: ["/bin/sh"]
-        args: ["-c", "trivy image marcelosales/nginx-ola-mundo:2.0"]
-      restartPolicy: Never
+name: Trivy Security Scan
+
+on:
+  push:
+    branches: [ v2 ]
+  pull_request:
+    branches: [ v2 ]
+
+jobs:
+  trivy-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'marcelosales/nginx-ola-mundo:2.0'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'
