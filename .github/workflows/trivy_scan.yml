@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trivy-scan-config
+data:
+  scan.sh: |
+    #!/bin/bash
+    trivy image --format json --output /tmp/trivy-report.json marcelosales/nginx-ola-mundo:2.0
+    trivy image marcelosales/nginx-ola-mundo:2.0
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: trivy-scan
+spec:
+  template:
+    spec:
+      containers:
+      - name: trivy
+        image: aquasec/trivy:latest
+        command: ["/bin/sh"]
+        args: ["-c", "trivy image marcelosales/nginx-ola-mundo:2.0"]
+      restartPolicy: Never
