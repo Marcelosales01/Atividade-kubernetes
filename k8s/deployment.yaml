@@ -19,7 +19,7 @@ spec:
         fsGroup: 1001
       containers:
       - name: nginx-ola-mundo-v2
-        image: marcelosales/nginx-ola-mundo:v2-20250710-1425
+        image: marcelosales/nginx-ola-mundo:v2-20250710-1517
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
