@@ -1,0 +1,20 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Kubernetes manifests
+k8s/
+
+# CI/CD
+.github/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
