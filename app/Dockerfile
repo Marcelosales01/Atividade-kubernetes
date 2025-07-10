@@ -1,5 +1,20 @@
-# Use imagem base alpine com versão específica (não latest)
-FROM nginx:1.25-alpine
+# Stage 1: Build stage - preparar arquivos estáticos
+FROM alpine:3.19 AS builder
+
+# Instalar ferramentas necessárias para build
+RUN apk add --no-cache \
+    curl \
+    ca-certificates
+
+# Criar diretório de trabalho
+WORKDIR /app
+
+# Copiar e validar arquivo HTML
+COPY index.html .
+RUN test -f index.html && echo "HTML file validated"
+
+# Stage 2: Runtime stage - imagem final mínima
+FROM nginx:1.25-alpine AS runtime
 
 # Criar usuário não-root
 RUN addgroup -g 1001 -S appuser && \
@@ -16,8 +31,8 @@ RUN chown -R appuser:appuser /var/cache/nginx && \
     touch /var/run/nginx.pid && \
     chown -R appuser:appuser /var/run/nginx.pid
 
-# Copiar arquivo HTML
-COPY --chown=appuser:appuser index.html /usr/share/nginx/html/index.html
+# Copiar arquivo HTML do stage de build
+COPY --from=builder --chown=appuser:appuser /app/index.html /usr/share/nginx/html/index.html
 
 # Mudar para usuário não-root
 USER appuser
